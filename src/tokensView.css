@@ -1,0 +1,422 @@
+/* TokensView.css */
+.tokens-view {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Remove the explicit background-color here */
+  }
+  
+  /* Filter row - Matches app.css */
+  .tokens-filter-row {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin: 16px 16px;
+  }
+  
+  .filter-select {
+    flex: 1;
+    height: 32px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-select.active {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+  }
+  
+  .filter-content {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .filter-label {
+    color: #757575;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  
+  .filter-value {
+    color: #1C1C1C;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .filter-arrow {
+    transition: transform 0.2s ease;
+  }
+  
+  .filter-arrow.open {
+    transform: rotate(180deg);
+  }
+  
+  .filter-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .filter-option {
+    width: 100%;
+    text-align: left;
+    padding: 8px;
+    border: none;
+    background: none;
+    font-size: 12px;
+    color: #1C1C1C;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .filter-option:hover {
+    background: #F5F5F5;
+  }
+  
+  .filter-option.active {
+    background: #F0F0F0;
+    font-weight: 500;
+  }
+  
+  /* Toggle container - Matches app.css */
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #757575;
+  }
+  
+  .toggle {
+    width: 32px;
+    height: 18px;
+    background: #E6E6E6;
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .toggle.active {
+    background: #007AFF;
+  }
+  
+  .toggle-handle {
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 7px;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+  }
+  
+  .toggle.active .toggle-handle {
+    transform: translateX(14px);
+  }
+  
+  /* Components Grid - Matches the app.css components-grid */
+  .components-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 8px; /* row-gap column-gap */
+    padding: 0 16px;
+    margin-top: 16px;
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    box-sizing: border-box;
+    overflow-y: auto;
+    /* The background color will be inherited from the parent container */
+  }
+  
+  [data-framer-theme="dark"] .components-grid {
+    background-color: #1C1C1E; /* Ensure dark background in dark mode */
+  }
+  
+  .component-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .component-preview {
+    aspect-ratio: 268 / 244;
+    background: #F5F5F5;
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+    position: relative;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .component-preview:hover {
+    border: 1px solid #007AFF;
+  }
+  
+  /* Color swatches styling */
+  .color-swatches {
+    display: flex;
+    width: 80%;
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .color-swatch {
+    flex: 1;
+    height: 100%;
+  }
+  
+  /* Text preview styling */
+  .text-preview {
+    background-color: white;
+    width: 70%;
+    aspect-ratio: 16/9;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Favorite button - Matches app.css */
+  .favorite-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 10;
+  }
+  
+  .favorite-btn.active svg {
+    fill: #007AFF;
+  }
+  
+  /* Component info - Matches app.css */
+  .component-info {
+    padding: 0 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .component-info h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1C1C1C;
+    margin: 0;
+    text-align: center;
+  }
+  
+  .badge {
+    padding: 2px 6px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }   
+  
+  .badge.free {
+    background: #FAFAFA;
+    color: #757575;
+  }
+  
+  .badge.pro {
+    background: #EDFAFF;
+    color: #007AFF;
+  }
+  
+  /* Loading skeleton - Matches app.css */
+  .skeleton-preview {
+    background: #F0F0F0;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .skeleton-title {
+    height: 18px;
+    width: 70%;
+    background: #F0F0F0;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .skeleton-badge {
+    height: 22px;
+    width: 60px;
+    background: #F0F0F0;
+    border-radius: 100px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
+    }
+  }
+  
+  /* Empty state - Matches app.css */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    grid-column: span 2;
+  }
+  
+  .empty-state p {
+    margin: 4px 0;
+    color: #757575;
+    font-size: 14px;
+  }
+  
+  /* Error message - Matches app.css */
+  .error-message {
+    margin: 16px 16px 0;
+    padding: 12px 16px;
+    background-color: rgba(255, 59, 48, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .error-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #FF3B30;
+  }
+  
+  /* Success message */
+  .success-message {
+    margin: 16px 16px 0;
+    padding: 12px 16px;
+    background-color: rgba(52, 199, 89, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .success-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #34C759;
+  }
+  
+  /* Dark mode styles - Match app.css */
+  [data-framer-theme="dark"] .filter-select {
+    background-color: #2C2C2E;
+    border-color: #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .filter-select.active {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.4);
+  }
+  
+  [data-framer-theme="dark"] .filter-label,
+  [data-framer-theme="dark"] .toggle-container span {
+    color: #E6E6E6;
+  }
+  
+  [data-framer-theme="dark"] .filter-value {
+    color: white;
+  }
+  
+  [data-framer-theme="dark"] .filter-dropdown {
+    background-color: #2C2C2E;
+    border-color: #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .filter-option {
+    color: white;
+  }
+  
+  [data-framer-theme="dark"] .filter-option:hover {
+    background-color: #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .filter-option.active {
+    background-color: #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .toggle {
+    background-color: #636366;
+  }
+  
+  [data-framer-theme="dark"] .toggle.active {
+    background-color: #007AFF;
+  }
+  
+  [data-framer-theme="dark"] .component-preview {
+    background-color: #2C2C2E;
+    border-color: #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .component-info h3 {
+    color: white;
+  }
+  
+  [data-framer-theme="dark"] .badge.free {
+    background-color: #2C2C2E;
+  }
+  
+  [data-framer-theme="dark"] .text-preview {
+    background-color: #1C1C1E;
+    border: 1px solid #3A3A3C;
+  }
+  
+  [data-framer-theme="dark"] .skeleton-preview,
+  [data-framer-theme="dark"] .skeleton-title,
+  [data-framer-theme="dark"] .skeleton-badge {
+    background-color: #2C2C2E;
+  }
+  
+  [data-framer-theme="dark"] .empty-state p {
+    color: #E6E6E6;
+  }

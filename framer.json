@@ -1,8 +1,17 @@
 {
   "id": "d69b5f",
-  "name": "Cosmoe Test",
+  "name": "Cosmoe",
+  "description": "Component library for rapid Framer prototyping",
+  "icon": "https://framerusercontent.com/images/P9KP8I9jJHJRqhfs7mqljAvRjI8.svg",
+  "author": "Your Name",
+  "version": "1.0.0",
   "modes": [
     "canvas"
   ],
-  "icon": "/icon.svg"
+  "permissions": [
+    "copy",
+    "network",
+    "selection",
+    "storage"
+  ]
 }

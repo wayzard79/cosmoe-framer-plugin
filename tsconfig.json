@@ -4,6 +4,10 @@
         "useDefineForClassFields": true,
         "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "module": "ES2022",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
 
         /* Bundler mode */
         "moduleResolution": "bundler",
@@ -19,5 +23,5 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["src"]
+    "include": ["src", "src/UserProfileScreens.tsx", "supbaseClient.ts"]
 }

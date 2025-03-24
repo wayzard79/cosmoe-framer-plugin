@@ -1,0 +1,481 @@
+/* User Profile Screens Styles */
+.profile-screen-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.back-button-container {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--framer-color-divider, #F0F0F0);
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 10;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  color: #71717A;
+  outline: none;
+}
+
+/* Guest Screen */
+.button-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0px 16px;
+  gap: 8px;
+}
+
+.action-button {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: #FAFAFA;
+  border: 1px solid #E6E6E6;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #757575;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.action-button:hover {
+  background-color: #EAEAEA;
+}
+
+[data-framer-theme="dark"] .action-button {
+  background-color: #2C2C2E;
+  color: #F5F5F5;
+  border-color: #3A3A3C;
+}
+
+[data-framer-theme="dark"] .action-button:hover {
+  background-color: #3A3A3C;
+}
+
+.legal-links {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.legal-button {
+  padding: 12px 16px;
+  background-color: transparent;
+  border: none;
+  border-top: 1px solid var(--framer-color-divider, #F0F0F0);
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  text-align: center;
+}
+
+.legal-button:hover {
+  background-color: #F5F5F5;
+}
+
+[data-framer-theme="dark"] .legal-button {
+  color: #F5F5F5;
+  border-top-color: #3A3A3C;
+}
+
+[data-framer-theme="dark"] .legal-button:hover {
+  background-color: #2C2C2E;
+}
+
+/* Login & Signup Screens */
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 16px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.logo-image {
+  width: 40px;
+  height: 40px;
+}
+
+.form-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-form input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  background-color: white;
+  border: 1px solid #E6E6E6;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1C1C1C;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.auth-form input:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+}
+
+[data-framer-theme="dark"] .auth-form input {
+  background-color: #2C2C2E;
+  border-color: #3A3A3C;
+  color: white;
+}
+
+.primary-button {
+  width: 100%;
+  height: 44px;
+  background-color: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary-button:hover {
+  background-color: #0066CC;
+}
+
+.primary-button:disabled {
+  background-color: #99C6FF;
+  cursor: not-allowed;
+}
+
+.link-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.text-link {
+  background: none;
+  border: none;
+  color: #007AFF;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.text-link-center {
+  background: none;
+  border: none;
+  color: #007AFF;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+/* Account Screen */
+.account-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--framer-color-text, #333);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.field-label {
+  font-size: 14px;
+  color: #71717A;
+  font-weight: 400;
+}
+
+.editable-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+[data-framer-theme="dark"] .editable-field {
+  background-color: #2C2C2E;
+  border-color: #3A3A3C;
+}
+
+.readonly-field {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+[data-framer-theme="dark"] .readonly-field {
+  background-color: #2C2C2E;
+  border-color: #3A3A3C;
+}
+
+.status-field {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+[data-framer-theme="dark"] .status-field {
+  background-color: #2C2C2E;
+  border-color: #3A3A3C;
+}
+
+.field-value {
+  color: var(--framer-color-text, #333);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-framer-theme="dark"] .field-value {
+  color: white;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #71717A;
+}
+
+.row-fields {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.active-status {
+  color: #16A34A;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #16A34A;
+}
+
+.account-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.secondary-button {
+  width: 100%;
+  height: 44px;
+  background-color: #F5F5F5;
+  color: #333;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.secondary-button:hover {
+  background-color: #EAEAEA;
+}
+
+[data-framer-theme="dark"] .secondary-button {
+  background-color: #2C2C2E;
+  border-color: #3A3A3C;
+  color: white;
+}
+
+[data-framer-theme="dark"] .secondary-button:hover {
+  background-color: #3A3A3C;
+}
+
+.form-error {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: #ef4444;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-success {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: #22c55e;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Info box for signup */
+.info-box {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Loading spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Profile components section */
+.profile-components {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px 16px 16px;
+  box-sizing: border-box;
+}
+
+/* Dark Theme User Profile Info Styling */
+.dark-profile-card {
+  background-color: #1E293B !important;
+  border-color: #374151 !important;
+}
+
+.dark-profile-title {
+  color: white !important;
+}
+
+.dark-profile-label {
+  color: #9ca3af !important;
+}
+
+.dark-profile-value {
+  color: white !important;
+}
+
+/* Action buttons in account view */
+.account-actions {
+  margin-top: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+  .row-fields {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Dark mode adjustments */
+[data-framer-theme="dark"] .form-error {
+  background-color: rgba(220, 38, 38, 0.2);
+}
+
+[data-framer-theme="dark"] .form-success {
+  background-color: rgba(22, 163, 74, 0.2);
+}
+
+[data-framer-theme="dark"] .info-box {
+  background-color: rgba(59, 130, 246, 0.2);
+}
