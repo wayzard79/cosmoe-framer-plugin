@@ -3,6 +3,8 @@
   "name": "Cosmoe",
   "description": "Component library for rapid Framer prototyping",
   "icon": "https://framerusercontent.com/images/P9KP8I9jJHJRqhfs7mqljAvRjI8.svg",
+  "url": "https://wayzard79.github.io/cosmoe-framer-plugin/",
+  "main": "index.html",
   "author": "Your Name",
   "version": "1.0.0",
   "modes": [
