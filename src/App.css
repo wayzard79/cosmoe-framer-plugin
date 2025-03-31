@@ -544,10 +544,22 @@ button {
 .badge.pro {
   background: #EDFAFF;
   color: #007AFF;
+  border: 1px solid transparent;
 }
 
 .badge.pro svg {
   fill: #007AFF;
+}
+
+/* Dark mode pro badge customization */
+[data-framer-theme="dark"] .badge.pro {
+  background-color: #085DC5;
+  border-color: #007AFF;
+  color: #FFFFFF;
+}
+
+[data-framer-theme="dark"] .badge.pro svg {
+  fill: #FFFFFF;
 }
 
 /* Component thumbnail styling */
@@ -1066,4 +1078,226 @@ button {
 
 [data-framer-theme="light"] .templates-description {
   color: #757575;
+}
+
+/* Pro locked component styles */
+.pro-locked {
+  position: relative;
+}
+
+.pro-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* This ensures hover events aren't captured by the overlay */
+}
+
+.pro-locked:hover .pro-overlay {
+  opacity: 1;
+}
+
+.pro-lock-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 122, 255, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.pro-lock-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pro-lock-icon span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Add a subtle visual indication that Pro components cannot be dragged */
+.pro-locked {
+  cursor: not-allowed;
+}
+
+.pro-locked .component-preview {
+  opacity: 0.9;
+}
+
+/* Loading notification for drag-and-drop */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-indicator .spinner {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}/* Add these CSS styles to your App.css file */
+
+/* Pro locked component styles */
+.pro-locked {
+  position: relative;
+}
+
+.pro-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* This ensures hover events aren't captured by the overlay */
+}
+
+.pro-locked:hover .pro-overlay {
+  opacity: 1;
+}
+
+.pro-lock-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 122, 255, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.pro-lock-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pro-lock-icon span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Add a subtle visual indication that Pro components cannot be dragged */
+.pro-locked {
+  cursor: not-allowed;
+}
+
+.pro-locked .component-preview {
+  opacity: 0.9;
+}
+
+/* Loading notification for drag-and-drop */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-indicator .spinner {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}/* Add these CSS styles to your App.css file */
+
+/* Pro locked component styles */
+.pro-locked {
+  position: relative;
+}
+
+.pro-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pro-locked:hover .pro-overlay {
+  opacity: 1;
+}
+
+.pro-lock-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border-color: #e6e6e6;
+  color: #000000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.pro-lock-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pro-lock-icon span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Loading notification for drag-and-drop */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-indicator .spinner {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

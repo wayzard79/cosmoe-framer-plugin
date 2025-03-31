@@ -67,6 +67,7 @@ export interface ComponentData {
   is_pro: boolean;
   url?: string;
   thumbnail?: string;
+  processedUrl?: string; // Add this for optimized loading
 }
 
 // Style types
@@ -110,10 +111,22 @@ export async function signIn(email: string, password: string): Promise<{ data: A
     
     console.log("User signed in:", data.user?.id);
     
-    // After login, sync favorites from local storage to Supabase
+    // After login, properly handle favorites
     if (data.user) {
+      // Get favorites from Supabase
+      const serverFavorites = await getFavoritesFromSupabase(data.user.id);
+      
+      // Get local favorites
       const localFavorites = await getFavorites();
-      await syncFavoritesToSupabase(data.user.id, localFavorites);
+      
+      // If user has server favorites, use those (don't overwrite with local)
+      if (serverFavorites.length > 0) {
+        // Update local storage with server favorites
+        localStorage.setItem('favoriteComponents', JSON.stringify(serverFavorites));
+      } else {
+        // If user has no server favorites, sync local favorites to Supabase
+        await syncFavoritesToSupabase(data.user.id, localFavorites);
+      }
     }
     
     return { data, error: null };
@@ -221,7 +234,84 @@ export function logCategoryInfo(components: ComponentData[], tabName: string, fi
   }
 }
 
-// Fetch components with filtering and pagination
+// Fetch license data for a user
+export async function fetchLicenseData(userId: string): Promise<any> {
+  console.log("fetchLicenseData called for userId:", userId);
+  try {
+    // First try to get license by user_id
+    const { data, error } = await supabase
+      .from('licenses')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+      
+    if (error) {
+      console.error('Error fetching license data:', error);
+      return null;
+    }
+    
+    if (data && data.length > 0) {
+      console.log("License found for user:", data[0]);
+      return data[0];
+    }
+    
+    // If not found by user_id, try to find by email via customer_profiles
+    const { data: userProfile } = await supabase.auth.getUser();
+    const userEmail = userProfile?.user?.email;
+    
+    if (!userEmail) {
+      console.log("No user email found");
+      return null;
+    }
+    
+    // Try to find profile by email
+    const { data: profile, error: profileError } = await supabase
+      .from('customer_profiles')
+      .select('*')
+      .eq('email', userEmail)
+      .single();
+      
+    if (profileError || !profile) {
+      console.log("No profile found for email:", userEmail);
+      return null;
+    }
+    
+    // Check if profile has license key or if plan_type is PRO
+    if (profile.plan_type === 'PRO') {
+      console.log("User has PRO plan in profile");
+      return {
+        status: 'active',
+        plan_type: 'PRO',
+        expires_at: null
+      };
+    }
+    
+    if (!profile.license_key) {
+      console.log("No license key in profile");
+      return null;
+    }
+    
+    // Try to find license by license key from profile
+    const { data: licenseData, error: licenseError } = await supabase
+      .from('licenses')
+      .select('*')
+      .eq('key', profile.license_key)
+      .single();
+      
+    if (licenseError) {
+      console.error("Error fetching license by key:", licenseError);
+      return null;
+    }
+    
+    console.log("License found by key:", licenseData);
+    return licenseData;
+  } catch (error) {
+    console.error('Error in fetchLicenseData:', error);
+    return null;
+  }
+}
+
 // Fetch components with filtering and pagination
 export async function fetchComponents(options: {
   type?: string;
@@ -368,6 +458,11 @@ export async function fetchComponents(options: {
         ? assets.find(asset => asset.asset_type === 'thumbnail')?.file_path
         : undefined;
 
+      // Pre-process the URL for faster loading
+      const processedUrl = url && !url.startsWith('https://') 
+        ? `https://framer.com/m/${url}` 
+        : url;
+
       return {
         id: item.id,
         title: item.title,
@@ -376,6 +471,7 @@ export async function fetchComponents(options: {
         category: item.category,
         is_pro: item.is_pro,
         url: url,
+        processedUrl: processedUrl,
         thumbnail: thumbnail
       };
     }) || [];
@@ -568,7 +664,14 @@ export async function getFavorites(userId?: string, forceRefresh: boolean = fals
   try {
     // If user is logged in, get favorites from Supabase
     if (userId) {
-      return await getFavoritesFromSupabase(userId);
+      const serverFavorites = await getFavoritesFromSupabase(userId);
+      
+      // If server has favorites or we're forcing a refresh, use server data
+      if (serverFavorites.length > 0 || forceRefresh) {
+        // Update local storage with server favorites
+        localStorage.setItem('favoriteComponents', JSON.stringify(serverFavorites));
+        return serverFavorites;
+      }
     }
     
     // Otherwise get favorites from local storage

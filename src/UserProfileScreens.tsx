@@ -195,8 +195,8 @@ export function UserProfileScreens({ isLoggedIn, user, onSignIn, onSignOut, onSc
       if (data?.user) {
         setSuccessMessage("Signed in successfully!");
         
-        // Get the user's favorites from Supabase
-        const favorites = await getFavorites(data.user.id);
+        // Get the user's favorites from Supabase - using force refresh to ensure we get server data
+        const favorites = await getFavorites(data.user.id, true);
         if (onFavoritesChanged) {
           onFavoritesChanged(favorites);
         }
@@ -249,6 +249,14 @@ export function UserProfileScreens({ isLoggedIn, user, onSignIn, onSignOut, onSc
         setSuccessMessage("Please check your email to verify your account before signing in.");
       } else if (data?.user) {
         // User was auto-confirmed
+        // Get local favorites to initialize the user's favorites
+        const localFavorites = await getFavorites();
+        
+        // Save them to Supabase
+        if (localFavorites.length > 0) {
+          await saveFavorites(localFavorites, data.user.id);
+        }
+        
         onSignIn(data.user);
         changeScreen("account");
       }

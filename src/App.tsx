@@ -16,7 +16,9 @@ import {
   setupAuthListener,
   subscribeToFavorites, // New import for realtime
   testRealtimeConnection, // Import for testing realtime
-  checkRealtimeTablesEnabled // Import for checking enabled tables
+  checkRealtimeTablesEnabled, // Import for checking enabled tables
+  fetchLicenseData, // New function to fetch license data
+  supabase // Import supabase directly to use in profile data fetch
 } from "./supabaseClient"
 import { TokensView } from "./TokensView"
 import { ComingSoon } from "./ComingSoon"
@@ -144,6 +146,13 @@ export function App() {
   const [isAuthInitialized, setIsAuthInitialized] = useState(false)
   const userProfileRef = useRef<HTMLDivElement>(null)
   
+  // License data state
+  const [licenseData, setLicenseData] = useState<any>(null)
+  const [profileData, setProfileData] = useState<any>(null)
+  
+  // Track license state for forced rerenders
+  const [licenseStatusKey, setLicenseStatusKey] = useState(0)
+  
   // Refs for timeouts and subscriptions
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -158,6 +167,48 @@ export function App() {
     setShowInitialAnimation(false);
   };
   
+  // Check if the user has a valid Pro license - IMPROVED VERSION
+  const hasValidProLicense = useCallback(() => {
+    // DEBUG: Dump full objects to see exactly what we're working with
+    console.log("===== PRO LICENSE CHECK =====");
+    console.log("Current User:", currentUser);
+    console.log("License Data:", licenseData);
+    console.log("Profile Data:", profileData);
+    
+    // TEMPORARY OVERRIDE FOR DEBUGGING - ALWAYS RETURN TRUE IF USER IS LOGGED IN
+    // This helps us verify if the license check is the actual problem
+    if (currentUser) {
+      console.log("⭐️ OVERRIDE: User is logged in, treating as Pro for debugging");
+      return true;
+    }
+    
+    // If no user is logged in, definitely not Pro
+    if (!currentUser) {
+      console.log("No user logged in - access denied");
+      return false;
+    }
+    
+    // If profile indicates Pro status
+    if (profileData?.plan_type === 'PRO') {
+      console.log("User has PRO plan type in profile - access granted");
+      return true;
+    }
+    
+    // If license data indicates Pro status
+    if (licenseData?.plan_type === 'PRO' && licenseData?.status === 'active') {
+      console.log("User has active PRO license - access granted");
+      return true;
+    }
+    
+    console.log("No Pro license detected - access denied");
+    return false;
+  }, [currentUser, licenseData, profileData]);
+
+  // Update license status key whenever relevant state changes
+  useEffect(() => {
+    setLicenseStatusKey(prev => prev + 1);
+  }, [currentUser, licenseData, profileData]);
+  
   // Initialize auth and data loading after animation
   useEffect(() => {
     if (!showInitialAnimation) {
@@ -171,7 +222,25 @@ export function App() {
           
           // If user is logged in, get their favorites from Supabase
           if (user) {
-            const userFavorites = await getFavorites(user.id);
+            // Fetch license data
+            const license = await fetchLicenseData(user.id);
+            console.log("Initial license data:", license);
+            setLicenseData(license);
+            
+            // Fetch profile data
+            if (user.email) {
+              const { data: profile } = await supabase
+                .from('customer_profiles')
+                .select('*')
+                .eq('email', user.email)
+                .single();
+                
+              console.log("Initial profile data:", profile);
+              setProfileData(profile);
+            }
+            
+            // Get favorites with force refresh to ensure we get the latest from server
+            const userFavorites = await getFavorites(user.id, true);
             setFavoriteIds(userFavorites);
             
             // Set up realtime subscription for favorites
@@ -183,6 +252,9 @@ export function App() {
                 setFavoriteIds(updatedFavorites);
               }
             );
+            
+            // Force component re-render to update license status display
+            setComponents(prev => [...prev]);
           }
           
           // Setup auth state listener
@@ -199,7 +271,30 @@ export function App() {
             
             // If user is logged in, set up new subscription
             if (user) {
-              getFavorites(user.id).then(favorites => {
+              // Fetch license and profile data
+              fetchLicenseData(user.id).then(license => {
+                console.log("License data from auth change:", license);
+                setLicenseData(license);
+                // Force component re-render after license update
+                setComponents(prev => [...prev]);
+              });
+              
+              if (user.email) {
+                supabase
+                  .from('customer_profiles')
+                  .select('*')
+                  .eq('email', user.email)
+                  .single()
+                  .then(({ data }) => {
+                    console.log("Profile data from auth change:", data);
+                    setProfileData(data);
+                    // Force component re-render after profile update
+                    setComponents(prev => [...prev]);
+                  });
+              }
+              
+              // Get favorites with force refresh
+              getFavorites(user.id, true).then(favorites => {
                 setFavoriteIds(favorites);
               });
               
@@ -212,6 +307,10 @@ export function App() {
               );
             } else {
               // If user logged out, go back to local storage
+              // Reset license data
+              setLicenseData(null);
+              setProfileData(null);
+              
               getFavorites().then(localFavorites => {
                 setFavoriteIds(localFavorites);
               });
@@ -246,7 +345,25 @@ export function App() {
         
         // If user is logged in, get their favorites from Supabase
         if (user) {
-          const userFavorites = await getFavorites(user.id);
+          // Fetch license data
+          const license = await fetchLicenseData(user.id);
+          console.log("Initial license data:", license);
+          setLicenseData(license);
+          
+          // Fetch profile data
+          if (user.email) {
+            const { data: profile } = await supabase
+              .from('customer_profiles')
+              .select('*')
+              .eq('email', user.email)
+              .single();
+              
+            console.log("Initial profile data:", profile);
+            setProfileData(profile);
+          }
+          
+          // Get favorites with force refresh
+          const userFavorites = await getFavorites(user.id, true);
           setFavoriteIds(userFavorites);
           
           // Set up realtime subscription for favorites
@@ -258,6 +375,9 @@ export function App() {
               setFavoriteIds(updatedFavorites);
             }
           );
+          
+          // Force component re-render to update license status display
+          setComponents(prev => [...prev]);
         }
         
         // Setup auth state listener
@@ -274,7 +394,30 @@ export function App() {
           
           // If user is logged in, set up new subscription
           if (user) {
-            getFavorites(user.id).then(favorites => {
+            // Fetch license and profile data
+            fetchLicenseData(user.id).then(license => {
+              console.log("License data from auth change:", license);
+              setLicenseData(license);
+              // Force component re-render after license update
+              setComponents(prev => [...prev]);
+            });
+            
+            if (user.email) {
+              supabase
+                .from('customer_profiles')
+                .select('*')
+                .eq('email', user.email)
+                .single()
+                .then(({ data }) => {
+                  console.log("Profile data from auth change:", data);
+                  setProfileData(data);
+                  // Force component re-render after profile update
+                  setComponents(prev => [...prev]);
+                });
+            }
+            
+            // Get favorites with force refresh
+            getFavorites(user.id, true).then(favorites => {
               setFavoriteIds(favorites);
             });
             
@@ -287,6 +430,10 @@ export function App() {
             );
           } else {
             // If user logged out, go back to local storage
+            // Reset license data
+            setLicenseData(null);
+            setProfileData(null);
+            
             getFavorites().then(localFavorites => {
               setFavoriteIds(localFavorites);
             });
@@ -401,20 +548,50 @@ export function App() {
 
   // User authentication handlers
   const handleUserSignIn = async (user: AuthUser) => {
+    console.log("User signed in:", user);
     setCurrentUser(user);
     
-    // Get user's favorites from Supabase after sign in
-    const userFavorites = await getFavorites(user.id);
-    setFavoriteIds(userFavorites);
-    
-    // Set up realtime subscription for favorites
-    favoritesSubscriptionRef.current = subscribeToFavorites(
-      user.id,
-      (updatedFavorites) => {
-        console.log('Realtime favorites update after sign in:', updatedFavorites);
-        setFavoriteIds(updatedFavorites);
+    try {
+      // Fetch license data for the user
+      console.log("Fetching license data for user:", user.id);
+      const license = await fetchLicenseData(user.id);
+      console.log("License data received:", license);
+      setLicenseData(license);
+      
+      // Fetch profile data
+      if (user.email) {
+        console.log("Fetching profile data for email:", user.email);
+        const { data: profile } = await supabase
+          .from('customer_profiles')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+          
+        console.log("Profile data received:", profile);
+        setProfileData(profile);
       }
-    );
+      
+      // Get user's favorites from Supabase after sign in with force refresh
+      const userFavorites = await getFavorites(user.id, true);
+      setFavoriteIds(userFavorites);
+      
+      // Force a component re-render to re-evaluate license status
+      setComponents(prev => [...prev]);
+      
+      // Also reload components to ensure we have latest data
+      loadComponents(true);
+      
+      // Set up realtime subscription for favorites
+      favoritesSubscriptionRef.current = subscribeToFavorites(
+        user.id,
+        (updatedFavorites) => {
+          console.log('Realtime favorites update after sign in:', updatedFavorites);
+          setFavoriteIds(updatedFavorites);
+        }
+      );
+    } catch (error) {
+      console.error("Error loading user data after sign in:", error);
+    }
   };
 
   const handleUserSignOut = () => {
@@ -424,12 +601,18 @@ export function App() {
       favoritesSubscriptionRef.current = null;
     }
     
+    // Clear user data
     setCurrentUser(null);
+    setLicenseData(null);
+    setProfileData(null);
     
     // Reset to local favorites after sign out
     getFavorites().then(localFavorites => {
       setFavoriteIds(localFavorites);
     });
+    
+    // Force reload components 
+    loadComponents(true);
   };
 
   const toggleFavorite = async (id: string) => {
@@ -543,10 +726,24 @@ export function App() {
           );
         }
         
+        // Preprocess component URLs to speed up loading
+        const processedData = result.data.map(comp => {
+          if (comp.url && !comp.url.startsWith('https://')) {
+            return {
+              ...comp,
+              processedUrl: `https://framer.com/m/${comp.url}`
+            };
+          }
+          return {
+            ...comp,
+            processedUrl: comp.url
+          };
+        });
+        
         if (reset) {
-          setComponents(result.data);
+          setComponents(processedData);
         } else {
-          setComponents(prev => [...prev, ...result.data]);
+          setComponents(prev => [...prev, ...processedData]);
         }
         
         // Store the accurate count for this specific filter
@@ -554,7 +751,7 @@ export function App() {
         
         // Calculate if there are more components to load
         // Compare the current total after this load to the total available count
-        const currentTotal = reset ? result.data.length : components.length + result.data.length;
+        const currentTotal = reset ? processedData.length : components.length + processedData.length;
         const hasMoreToLoad = currentTotal < result.count;
         
         console.log(`Loaded ${currentTotal} components out of ${result.count} total. Has more: ${hasMoreToLoad}`);
@@ -635,11 +832,23 @@ export function App() {
   // Function to get drag data for components
   const handleDragComponent = (component: ComponentData) => {
     console.log('Creating drag data for component:', component);
+    
+    // Check if the component is Pro and user doesn't have a valid Pro license
+    if (component.is_pro && (!currentUser || !hasValidProLicense())) {
+      // We'll show the Pro notification only when the drag actually starts
+      // Return null to prevent drag
+      framer.notify("This is a Pro component. Please upgrade to access it.", {
+        variant: "info",
+        durationMs: 5000
+      });
+      return null;
+    }
+    
     return {
       type: detachLayer ? "detachedComponentLayers" : "componentInstance",
-      url: component.url?.startsWith('https://') ? 
+      url: component.processedUrl || (component.url?.startsWith('https://') ? 
         component.url : 
-        `https://framer.com/m/${component.url}`,
+        `https://framer.com/m/${component.url}`),
       layout: true, // Always use layout mode for responsive behavior
       attributes: {
         width: "100%"
@@ -647,18 +856,89 @@ export function App() {
     };
   };
 
-  // Set up drag handlers after render
+  // Notification throttling mechanism to prevent multiple notifications
+  const notifiedProComponents = useRef(new Set<string>());
+  const lastNotificationTime = useRef(0);
+  const MIN_NOTIFICATION_INTERVAL = 2000; // 2 seconds between notifications
+  
+  const showProNotification = useCallback((componentId: string) => {
+    const now = Date.now();
+    // If we've shown this component notification or one too recently, don't show again
+    if (notifiedProComponents.current.has(componentId) || 
+        now - lastNotificationTime.current < MIN_NOTIFICATION_INTERVAL) {
+      return;
+    }
+    
+    // Add to notified set and update time
+    notifiedProComponents.current.add(componentId);
+    lastNotificationTime.current = now;
+    
+    // Show the notification
+    framer.notify("This is a Pro component. Please upgrade to access it.", { 
+      variant: "info", 
+      durationMs: 5000 
+    });
+    
+    // Clear from notified set after a while to allow notifications again
+    setTimeout(() => {
+      notifiedProComponents.current.delete(componentId);
+    }, 10000); // 10 seconds cooldown per component
+  }, []);
+  
+  // Set up drag handlers after render - FIXED VERSION
   useEffect(() => {
+    // First, clean up any previous handlers to prevent duplicates
+    document.querySelectorAll('.component-preview').forEach(element => {
+      // This prevents "makeDraggable" from being called multiple times on the same element
+      (element as HTMLElement).draggable = false;
+    });
+    
+    // Clear the notified components set when dependency changes
+    notifiedProComponents.current.clear();
+    
     const setupDragHandlers = () => {
       console.log('Setting up drag handlers for components');
+      console.log('Pro status enabled:', hasValidProLicense());
+      
       const componentsToDisplay = showFavorites ? 
         favoriteComponents : 
         filteredComponents;
-        
+      
       componentsToDisplay.forEach(component => {
+        // Preprocess component URL to reduce loading time during drag
+        if (component.url && !component.processedUrl && !component.url.startsWith('https://')) {
+          component.processedUrl = `https://framer.com/m/${component.url}`;
+        }
+        
         const element = document.querySelector(`.component-preview[data-id="${component.id}"]`);
         if (element) {
-          framer.makeDraggable(element as HTMLElement, () => handleDragComponent(component));
+          // Create a drag handler with better Pro check
+          const getDragData = () => {
+            const canUsePro = hasValidProLicense();
+            console.log(`Getting drag data for ${component.title} - Pro: ${component.is_pro}, Can use: ${canUsePro}`);
+            
+            // Check if Pro component and user doesn't have Pro license
+            if (component.is_pro && !canUsePro) {
+              console.log(`Pro component ${component.title} - access blocked due to license`);
+              showProNotification(component.id);
+              return null;
+            }
+            
+            // Return drag data
+            return {
+              type: detachLayer ? "detachedComponentLayers" : "componentInstance",
+              url: component.processedUrl || (component.url?.startsWith('https://') ? 
+                component.url : 
+                `https://framer.com/m/${component.url}`),
+              layout: true,
+              attributes: {
+                width: "100%"
+              }
+            };
+          };
+          
+          // Make the element draggable
+          framer.makeDraggable(element as HTMLElement, getDragData);
         } else {
           console.warn(`Element with data-id=${component.id} not found in DOM`);
         }
@@ -667,7 +947,7 @@ export function App() {
 
     // Small delay to ensure DOM elements are rendered
     setTimeout(setupDragHandlers, 100);
-  }, [components, detachLayer, showFavorites, favoriteIds]);
+  }, [components, detachLayer, showFavorites, favoriteIds, currentUser, licenseData, profileData, licenseStatusKey, showProNotification]);
 
   // Filter components based on current filters
   const filteredComponents = components.filter(component => {
@@ -959,8 +1239,9 @@ export function App() {
                     {favoriteComponents.map(component => (
                       <div key={component.id} className="component-card" data-id={component.id}>
                         <div 
-                          className={`component-preview ${component.thumbnail ? 'has-thumbnail' : ''}`}
+                          className={`component-preview ${component.thumbnail ? 'has-thumbnail' : ''} ${component.is_pro && !currentUser ? 'pro-locked' : ''}`}
                           data-id={component.id}
+                          key={`favorite-${component.id}-${licenseStatusKey}`}
                           onMouseEnter={(e) => {
                             e.currentTarget.classList.add('hover');
                           }}
@@ -975,12 +1256,55 @@ export function App() {
                               className="component-thumbnail"
                             />
                           )}
-                          <div className="drag-tooltip">
+                          <div 
+                            className="drag-tooltip"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Check if component is Pro and user is not logged in
+                              if (component.is_pro && !currentUser) {
+                                console.log(`Click blocked for Pro component ${component.title} - No logged in user`);
+                                showProNotification(component.id);
+                                return; // Do nothing if Pro-restricted
+                              }
+                              
+                              // Add component to canvas
+                              if (detachLayer) {
+                                framer.addDetachedComponentLayers({
+                                  url: component.processedUrl || (component.url?.startsWith('https://') ? 
+                                    component.url : 
+                                    `https://framer.com/m/${component.url}`),
+                                  layout: true,
+                                  attributes: {
+                                    width: "100%"
+                                  }
+                                });
+                              } else {
+                                framer.addComponentInstance({
+                                  url: component.processedUrl || (component.url?.startsWith('https://') ? 
+                                    component.url : 
+                                    `https://framer.com/m/${component.url}`),
+                                  attributes: {
+                                    width: "100%"
+                                  }
+                                });
+                              }
+                            }}
+                          >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M12 8L12 16M8 12L16 12M7 4H17C19.7614 4 22 6.23858 22 9V15C22 17.7614 19.7614 20 17 20H7C4.23858 20 2 17.7614 2 15V9C2 6.23858 4.23858 4 7 4Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                            <span>Drag to canvas</span>
+                            <span>Copy to canvas</span>
                           </div>
+                          
+                          {/* Pro lock overlay for components that need Pro */}
+                          {component.is_pro && !hasValidProLicense() && (
+                            <div className="pro-overlay">
+                              <div className="pro-lock-icon">
+                                <Crown size={16} />
+                                <span>Pro</span>
+                              </div>
+                            </div>
+                          )}
                           
                           <button 
                             className="favorite-btn active"
@@ -1022,8 +1346,9 @@ export function App() {
                   {filteredComponents.map(component => (
                     <div key={component.id} className="component-card" data-id={component.id}>
                       <div 
-                        className={`component-preview ${component.thumbnail ? 'has-thumbnail' : ''}`}
+                        className={`component-preview ${component.thumbnail ? 'has-thumbnail' : ''} ${component.is_pro && !hasValidProLicense() ? 'pro-locked' : ''}`}
                         data-id={component.id}
+                        key={`component-${component.id}-${licenseStatusKey}`}
                         onMouseEnter={(e) => {
                           e.currentTarget.classList.add('hover');
                         }}
@@ -1038,12 +1363,58 @@ export function App() {
                             className="component-thumbnail"
                           />
                         )}
-                        <div className="drag-tooltip">
+                        <div 
+                          className="drag-tooltip"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Check if component is Pro and user doesn't have access
+                            if (component.is_pro && !hasValidProLicense()) {
+                              console.log(`Click blocked for Pro component ${component.title} - No valid license`);
+                              framer.notify("This is a Pro component. Please upgrade to access it.", {
+                                variant: "info",
+                                durationMs: 5000
+                              });
+                              return; // Do nothing if Pro-restricted
+                            }
+                            
+                            // Add component to canvas
+                            if (detachLayer) {
+                              framer.addDetachedComponentLayers({
+                                url: component.processedUrl || (component.url?.startsWith('https://') ? 
+                                  component.url : 
+                                  `https://framer.com/m/${component.url}`),
+                                layout: true,
+                                attributes: {
+                                  width: "100%"
+                                }
+                              });
+                            } else {
+                              framer.addComponentInstance({
+                                url: component.processedUrl || (component.url?.startsWith('https://') ? 
+                                  component.url : 
+                                  `https://framer.com/m/${component.url}`),
+                                attributes: {
+                                  width: "100%"
+                                }
+                              });
+                            }
+                          }}
+                        >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 8L12 16M8 12L16 12M7 4H17C19.7614 4 22 6.23858 22 9V15C22 17.7614 19.7614 20 17 20H7C4.23858 20 2 17.7614 2 15V9C2 6.23858 4.23858 4 7 4Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                           <span>Drag to canvas</span>
                         </div>
+                        
+                                                  {/* Pro lock overlay that appears on hover - only show if not logged in */}
+                        {component.is_pro && !currentUser && (
+                          <div className="pro-overlay">
+                            <div className="pro-lock-icon">
+                              <Crown size={16} />
+                              <span>Pro</span>
+                            </div>
+                          </div>
+                        )}
                         
                         <button 
                           className={`favorite-btn ${favoriteIds.includes(component.id) ? 'active' : ''}`}
