@@ -2,8 +2,8 @@
   "id": "d69b5f",
   "name": "Cosmoe",
   "description": "1000s of Framer components in the palm of your hands.",
-  "icon": "https://wayzard79.github.io/cosmoe-framer-plugin/cosmoe-icon.svg",
-  "url": "https://wayzard79.github.io/cosmoe-framer-plugin/",
+  "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M11.5831 24C5.30669 23.7611 0.263219 18.6996 0.000536364 12.5105C3.9889 12.5931 11.3026 16.3255 11.5831 24Z\" fill=\"#007AFF\"/><path d=\"M24 13.577C23.2461 19.2289 18.4949 23.7023 12.654 23.9937C13.0894 15.6508 20.7034 13.5124 24 13.577Z\" fill=\"#007AFF\"/><path d=\"M12.4909 0.00459057C18.411 0.220097 23.2385 4.72617 23.9998 10.4259C16.4207 10.2626 12.5859 3.78775 12.4909 0.00459057Z\" fill=\"#007AFF\"/><path d=\"M0 11.5084C0.258753 5.25215 5.40094 0.151805 11.7554 0C11.662 3.87959 7.46913 11.0684 0 11.5084Z\" fill=\"#007AFF\"/></svg>",
+  "url": "https://www.cosmoeui.com",
   "main": "index.html",
   "author": "Abhijit Haldar",
   "version": "1.0.0",
@@ -12,7 +12,7 @@
   ],
   "permissions": [
     "copy",
-    "network", 
+    "network",
     "selection",
     "storage"
   ]
